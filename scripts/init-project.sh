@@ -14,6 +14,7 @@ YELLOW=""
 BLUE=""
 BOLD=""
 INITIAL_PROJECT_PROMPT=""
+BOOTSTRAP_CONTEXT_FILE=""
 ICON_INFO="󰋽"
 ICON_DONE="󰄬"
 ICON_WARN="󰀪"
@@ -166,10 +167,10 @@ if [ "$SELF_TEST" -eq 1 ]; then
       CHECK_STATUS=1
     fi
 
-    if [ -f "$TEST_DIR/openspec/project.md" ] && grep -Fq '<!-- init-project:initial-prompt:start -->' "$TEST_DIR/openspec/project.md"; then
-      self_test_check 0 "Initial project prompt was recorded in openspec/project.md"
+    if [ -f "$TEST_DIR/openspec/project.md" ] && grep -Fq '<!-- init-project:bootstrap-context:start -->' "$TEST_DIR/openspec/project.md"; then
+      self_test_check 0 "Bootstrap context was recorded in openspec/project.md"
     else
-      self_test_check 1 "Initial project prompt is missing from openspec/project.md"
+      self_test_check 1 "Bootstrap context is missing from openspec/project.md"
       CHECK_STATUS=1
     fi
   else
@@ -302,8 +303,12 @@ prompt_required() {
   prompt="$1"
   value=""
   while [ -z "$value" ]; do
-    printf '%s: ' "$prompt" >&2
-    IFS= read -r value || die "Input interrupted."
+    if [ -t 0 ] && [ -t 2 ]; then
+      IFS= read -e -r -p "$prompt: " value || die "Input interrupted."
+    else
+      printf '%s: ' "$prompt" >&2
+      IFS= read -r value || die "Input interrupted."
+    fi
   done
   printf '%s' "$value"
 }
@@ -312,8 +317,12 @@ prompt_optional() {
   prompt="$1"
   default="$2"
   value=""
-  printf '%s [%s]: ' "$prompt" "$default" >&2
-  IFS= read -r value || die "Input interrupted."
+  if [ -t 0 ] && [ -t 2 ]; then
+    IFS= read -e -i "$default" -r -p "$prompt: " value || die "Input interrupted."
+  else
+    printf '%s [%s]: ' "$prompt" "$default" >&2
+    IFS= read -r value || die "Input interrupted."
+  fi
   if [ -z "$value" ]; then
     value="$default"
   fi
@@ -333,69 +342,40 @@ write_context_file() {
   context_file="$WORK_DIR/project-context.md"
 
   capture_initial_prompt
-  printf '\n%s%s[%s Input]%s Provide structured project context for Codex.\n' "$BOLD" "$BLUE" "$ICON_INPUT" "$RESET" >&2
+  printf '\n%s%s[%s Input]%s Provide minimal project context for Codex.\n' "$BOLD" "$BLUE" "$ICON_INPUT" "$RESET" >&2
   project_name="$(prompt_required "Project name")"
-  project_purpose="$(prompt_required "Purpose and system type")"
-  responsibilities="$(prompt_required "Primary responsibilities (semicolon-separated)")"
+  project_purpose="$(prompt_required "General project context and purpose")"
+  use_cases="$(prompt_required "Primary use cases (semicolon-separated)")"
   tech_stack="$(prompt_required "Technical stack and fixed decisions")"
-  runtime="$(prompt_required "Runtime and package manager")"
-  structure="$(prompt_optional "Project-specific structure additions" "No additions beyond the base structure")"
-  command_setup="$(prompt_required "Setup command")"
-  command_run="$(prompt_required "Local run command")"
-  command_build="$(prompt_required "Build command")"
-  command_lint="$(prompt_required "Lint or static-check command")"
-  command_test="$(prompt_required "Test command")"
-  command_integration="$(prompt_optional "Integration/e2e test command" "Not applicable")"
-  command_database="$(prompt_optional "Database initialization/migration command" "Not applicable")"
-  testing_strategy="$(prompt_required "Testing strategy")"
-  environment_variables="$(prompt_optional "Required environment variable names (comma-separated)" "Not applicable")"
-  external_sources="$(prompt_optional "External documentation sources (URLs and use, semicolon-separated)" "No external sources required")"
-  additional_skills="$(prompt_optional "Additional project skills and triggers" "No additional skills apply")"
-  security_rules="$(prompt_required "Security and configuration rules")"
-  delivery="$(prompt_required "Delivery expectations")"
-  commit_convention="$(prompt_optional "Commit and pull request convention" "Conventional Commits; report tests and configuration changes in pull requests")"
 
   {
     printf '# Initial Project Context\n\n'
     printf '## Initial Project Prompt\n\n'
     printf '%s\n\n' "$INITIAL_PROJECT_PROMPT"
     printf -- '- Project name: %s\n' "$project_name"
-    printf -- '- Purpose and system type: %s\n' "$project_purpose"
-    printf -- '- Primary responsibilities: %s\n' "$responsibilities"
+    printf -- '- General project context and purpose: %s\n' "$project_purpose"
+    printf -- '- Primary use cases: %s\n' "$use_cases"
     printf -- '- Technical stack and fixed decisions: %s\n' "$tech_stack"
-    printf -- '- Runtime and package manager: %s\n' "$runtime"
-    printf -- '- Project-specific structure additions: %s\n' "$structure"
-    printf -- '- Setup command: `%s`\n' "$command_setup"
-    printf -- '- Local run command: `%s`\n' "$command_run"
-    printf -- '- Build command: `%s`\n' "$command_build"
-    printf -- '- Lint or static-check command: `%s`\n' "$command_lint"
-    printf -- '- Test command: `%s`\n' "$command_test"
-    printf -- '- Integration/e2e command: `%s`\n' "$command_integration"
-    printf -- '- Database initialization/migration command: `%s`\n' "$command_database"
-    printf -- '- Testing strategy: %s\n' "$testing_strategy"
-    printf -- '- Required environment variable names: %s\n' "$environment_variables"
-    printf -- '- External documentation sources: %s\n' "$external_sources"
-    printf -- '- Additional project skills and triggers: %s\n' "$additional_skills"
-    printf -- '- Security and configuration rules: %s\n' "$security_rules"
-    printf -- '- Delivery expectations: %s\n' "$delivery"
-    printf -- '- Commit and pull request convention: %s\n' "$commit_convention"
+    printf -- '- Unknown operational details policy: If commands, environment variables, testing approach, security rules, external sources, or delivery conventions are not explicit in this context, mark them as "Not defined yet" or "To be decided during implementation bootstrap" instead of inventing values.\n'
   } > "$context_file"
 
   printf '%s' "$context_file"
 }
 
 sync_openspec_project_context() {
+  context_file="$1"
   project_file="openspec/project.md"
-  block_file="$WORK_DIR/openspec-initial-prompt.md"
+  block_file="$WORK_DIR/openspec-bootstrap-context.md"
   temp_file="$WORK_DIR/openspec-project.tmp"
-  start_marker='<!-- init-project:initial-prompt:start -->'
-  end_marker='<!-- init-project:initial-prompt:end -->'
+  start_marker='<!-- init-project:bootstrap-context:start -->'
+  end_marker='<!-- init-project:bootstrap-context:end -->'
 
   {
     printf '%s\n' "$start_marker"
-    printf '## Initial Project Prompt\n\n'
-    printf '%s\n\n' "$INITIAL_PROJECT_PROMPT"
-    printf 'This section is managed by `scripts/init-project.sh` and records the original project direction captured during repository initialization.\n'
+    printf '## Bootstrap Context\n\n'
+    printf 'This section is managed by `scripts/init-project.sh` and records the project direction captured during repository initialization.\n\n'
+    cat "$context_file"
+    printf '\n'
     printf '%s\n' "$end_marker"
   } > "$block_file"
 
@@ -440,13 +420,14 @@ Read:
 
 Tasks:
 0. Treat the "Initial Project Prompt" section as the highest-priority stylistic and directional guidance for how to shape AGENTS.md and README.md, as long as it does not conflict with explicit task constraints below.
-1. Replace all double-braced placeholders in AGENTS.md with concrete project instructions from the context. Use "Not applicable" where the context explicitly says it does not apply.
+1. Replace all double-braced placeholders in AGENTS.md with concrete project instructions from the context. When the context does not define a command, environment variable, testing rule, external source, security rule, or delivery convention, write an explicit placeholder value such as "Not defined yet" or "To be decided during implementation bootstrap". Do not leave unresolved template placeholders.
 2. Replace README.md with the completed project README derived from README.template.md. Do not leave template-maintenance instructions in the project README.
-3. Update .env.example only with the sanitized environment variable names stated in the context. Do not add secrets, real credentials, or inferred variables.
+3. Update .env.example only with the sanitized environment variable names stated in the context. If none are stated, keep the file as a generic sanitized scaffold and do not invent variables.
 4. Reflect initialized OpenSpec usage and the existing project folder policy accurately.
 5. Do not modify scripts/init-project.sh, .gitignore, openspec/, the personal-project-structure skill, or application code.
-6. Do not invent external URLs, commands, integrations, or security requirements that are absent from the context.
-7. Before finishing, check AGENTS.md and README.md for unresolved double-braced placeholders and remove or resolve them.
+6. Derive project responsibilities and capability summaries from the stated use cases and project context. Keep them concrete and concise.
+7. Do not invent external URLs, commands, integrations, environment variables, or security requirements that are absent from the context.
+8. Before finishing, check AGENTS.md and README.md for unresolved double-braced placeholders and remove or resolve them.
 
 Project context:
 
@@ -464,6 +445,10 @@ printf '%s%s[%s Step]%s Initializing derived project at %s\n' "$BOLD" "$BLUE" "$
 create_structure
 success "Created base project folders and tracked placeholders (tmp/ remains disposable and ignored)"
 
+if [ "$RUN_OPENSPEC" -eq 1 ] || [ "$RUN_CODEX" -eq 1 ]; then
+  BOOTSTRAP_CONTEXT_FILE="$(write_context_file)"
+fi
+
 if [ "$RUN_OPENSPEC" -eq 1 ]; then
   run_step "Initializing OpenSpec for Codex" "openspec-init" openspec init --tools codex .
   for dir in openspec/specs openspec/changes/archive; do
@@ -477,8 +462,8 @@ if [ "$RUN_OPENSPEC" -eq 1 ]; then
       OPEN_SPEC_STATUS="initialized-with-warnings"
       warn "OpenSpec created its structure but reported a tool-setup warning. Review $WORK_DIR/openspec-init.log"
     fi
-    sync_openspec_project_context
-    success "Recorded the initial project prompt in openspec/project.md"
+    sync_openspec_project_context "$BOOTSTRAP_CONTEXT_FILE"
+    success "Recorded the bootstrap context in openspec/project.md"
   else
     OPEN_SPEC_STATUS="failed"
     die "OpenSpec did not create the expected workflow directories. Review $WORK_DIR/openspec-init.log"
@@ -489,8 +474,7 @@ else
 fi
 
 if [ "$RUN_CODEX" -eq 1 ]; then
-  context_file="$(write_context_file)"
-  prompt_file="$(write_codex_prompt "$context_file")"
+  prompt_file="$(write_codex_prompt "$BOOTSTRAP_CONTEXT_FILE")"
   run_step "Generating AGENTS.md, README.md, and .env.example with Codex" "codex-init" \
     codex exec --ephemeral -s workspace-write -C "$ROOT" - < "$prompt_file"
 else

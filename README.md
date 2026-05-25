@@ -28,12 +28,12 @@ The template intentionally does not select a programming language, application f
    ./scripts/init-project.sh
    ```
 
-   The script creates the base folders, initializes OpenSpec for Codex, asks for a mandatory initial project prompt plus structured project context and sanitized environment-variable names, and calls Codex to complete `AGENTS.md`, `README.md`, and `.env.example`.
+   The script creates the base folders, initializes OpenSpec for Codex, asks only for a mandatory initial project prompt plus the minimum project context needed to bootstrap the repository (`project name`, `general context`, `primary use cases`, and `technology stack`), and then calls Codex to complete `AGENTS.md`, `README.md`, and `.env.example`.
 
 4. Review the generated files and complete the `/init` completion checklist in `AGENTS.md` before substantive implementation work.
 
-The initializer refuses to run while `origin` still points at `template-agentic-programming`, preventing accidental initialization or overwrite of this template repository. It uses a lightweight colored terminal spinner implemented in Bash, with bracketed log levels and Nerd Font icons, and requires no visual or installer dependency. When stdout is not an interactive terminal, it falls back to plain non-animated output.
-Execution logs are written under ignored `tmp/init-project/`. The mandatory initial project prompt is also written into `openspec/project.md`, so OpenSpec keeps the same starting context that Codex used to complete `AGENTS.md` and `README.md`. If OpenSpec creates its workflow directories but reports an auxiliary Codex setup warning, the script keeps going and calls it out explicitly as a partial warning instead of a full failure.
+The initializer refuses to run while `origin` still points at `template-agentic-programming`, preventing accidental initialization or overwrite of this template repository. It uses a lightweight colored terminal spinner implemented in Bash, with bracketed log levels and Nerd Font icons, and requires no visual or installer dependency. Interactive prompts use Bash readline editing, so arrow keys, in-line deletion, and cursor movement work while answering the bootstrap questions. When stdout is not an interactive terminal, it falls back to plain non-animated output.
+Execution logs are written under ignored `tmp/init-project/`. The captured bootstrap context is also written into `openspec/project.md`, so OpenSpec keeps the same starting context that Codex used to complete `AGENTS.md` and `README.md`. If OpenSpec creates its workflow directories but reports an auxiliary Codex setup warning, the script keeps going and calls it out explicitly as a partial warning instead of a full failure.
 
 Useful options:
 
@@ -50,7 +50,7 @@ To test the initializer from inside the template repository itself, use `--self-
 
 Use OpenSpec as the source of truth for non-trivial changes in a derived project:
 
-- `openspec/project.md`: base project context. The initializer writes the original project prompt here so later OpenSpec work starts from the same intent.
+- `openspec/project.md`: base project context. The initializer writes the captured bootstrap context here so later OpenSpec work starts from the same intent, use cases, and technology choices.
 - `openspec/specs/`: stable capability and behavior specs that describe what the project currently supports.
 - `openspec/changes/<change-name>/`: proposals, design notes, task lists, and spec deltas for a specific non-trivial change.
 - `openspec/changes/archive/`: completed changes after they are incorporated into the stable specs.
