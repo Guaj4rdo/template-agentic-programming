@@ -9,25 +9,68 @@ This repository is a stack-agnostic starting point for personal software project
 - `README.template.md`: starter README for a derived project.
 - `.env.example`: sanitized configuration placeholder.
 - `.gitignore`: baseline exclusions for secrets, local artifacts, dependencies, and build output, including disposable `tmp/`.
+- `scripts/init-project.sh`: dependency-free interactive bootstrap for a derived repository.
 
 The template intentionally does not select a programming language, application framework, package manager, database, or deployment target.
 
 ## Starting a New Project
 
 1. Create the new repository from this template.
-2. Use `/init` to establish repository instructions and project context.
-3. Complete every double-braced field in `AGENTS.md`, or explicitly replace non-applicable fields with `Not applicable`.
-4. Replace this template-oriented `README.md` with content based on `README.template.md`, filled for the new project.
-5. Update `.env.example` with required sanitized configuration variables.
-6. Initialize OpenSpec for the derived project:
+2. Confirm that the new repository has its own remote and does not point back to this template:
 
    ```bash
-   openspec init
+   git remote -v
    ```
 
-7. Record project-specific skills and authoritative external documentation sources in `AGENTS.md`.
-8. Create implementation folders only after project structure and technical decisions are documented.
-9. Complete the `/init` completion checklist in `AGENTS.md` before substantive implementation work.
+3. Run the initializer:
+
+   ```bash
+   ./scripts/init-project.sh
+   ```
+
+   The script creates the base folders, initializes OpenSpec for Codex, asks for a mandatory initial project prompt plus structured project context and sanitized environment-variable names, and calls Codex to complete `AGENTS.md`, `README.md`, and `.env.example`.
+
+4. Review the generated files and complete the `/init` completion checklist in `AGENTS.md` before substantive implementation work.
+
+The initializer refuses to run while `origin` still points at `template-agentic-programming`, preventing accidental initialization or overwrite of this template repository. It uses a lightweight colored terminal spinner implemented in Bash, with bracketed log levels and Nerd Font icons, and requires no visual or installer dependency. When stdout is not an interactive terminal, it falls back to plain non-animated output.
+Execution logs are written under ignored `tmp/init-project/`. The mandatory initial project prompt is also written into `openspec/project.md`, so OpenSpec keeps the same starting context that Codex used to complete `AGENTS.md` and `README.md`. If OpenSpec creates its workflow directories but reports an auxiliary Codex setup warning, the script keeps going and calls it out explicitly as a partial warning instead of a full failure.
+
+Useful options:
+
+```bash
+./scripts/init-project.sh --no-codex
+./scripts/init-project.sh --no-openspec
+./scripts/init-project.sh --allow-no-remote
+./scripts/init-project.sh --self-test --no-codex --no-openspec
+```
+
+To test the initializer from inside the template repository itself, use `--self-test`. It creates a temporary derived copy, assigns it a fake non-template `origin`, runs the initializer there without touching this repository's remote, and prints a small verification summary for folders, ignore rules, OpenSpec, and placeholder resolution.
+
+## Working With OpenSpec
+
+Use OpenSpec as the source of truth for non-trivial changes in a derived project:
+
+- `openspec/project.md`: base project context. The initializer writes the original project prompt here so later OpenSpec work starts from the same intent.
+- `openspec/specs/`: stable capability and behavior specs that describe what the project currently supports.
+- `openspec/changes/<change-name>/`: proposals, design notes, task lists, and spec deltas for a specific non-trivial change.
+- `openspec/changes/archive/`: completed changes after they are incorporated into the stable specs.
+
+Useful CLI commands from the local OpenSpec installation:
+
+```bash
+openspec list
+openspec list --specs
+openspec show <item-name>
+openspec validate
+openspec archive <change-name>
+```
+
+Practical workflow:
+
+1. Initialize the project with `./scripts/init-project.sh`.
+2. Keep `openspec/project.md` aligned with durable project context.
+3. Before a non-trivial feature, refactor, contract change, or infrastructure change, create or update an item under `openspec/changes/<change-name>/`.
+4. Implement against that OpenSpec change, then validate and archive it when the project behavior becomes the new baseline.
 
 ## Working Rules
 

@@ -2,6 +2,8 @@
 
 Complete this file after `/init` and before substantive implementation work. Replace every required double-braced field with project-specific guidance, or explicitly state `Not applicable` when a section does not apply. Do not leave unresolved placeholders in an active project.
 
+For repositories created from this template, run `./scripts/init-project.sh` from the derived repository to create base folders, initialize OpenSpec, and use Codex to complete this document and `README.md`. The initializer must not be run while `origin` points to the template repository.
+
 ## Initialization Checklist
 
 After `/init`, define all of the following:
@@ -33,7 +35,8 @@ Complete these checks before substantive implementation work begins:
 - [ ] Replace every double-braced field in `AGENTS.md`, or explicitly set the field to `Not applicable`.
 - [ ] Replace the template repository `README.md` with a project README derived from `README.template.md`.
 - [ ] Update `.env.example` with all required sanitized configuration variables and confirm local secret files are ignored.
-- [ ] Run `openspec init` for the derived project and record its project context before starting non-trivial changes.
+- [ ] Confirm the repository remote belongs to this derived project and does not point to `template-agentic-programming`.
+- [ ] Run `openspec init` for the derived project and confirm the OpenSpec workflow is initialized before starting non-trivial changes.
 - [ ] Register project-specific skills and load rules in the skills table below, or explicitly state that no additional skills apply.
 - [ ] Register authoritative external documentation sources, or explicitly state that no external source is required.
 - [ ] Confirm project-specific structure, technical decisions, commands, and testing strategy are documented.
