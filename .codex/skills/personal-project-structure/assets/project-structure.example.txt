@@ -1,0 +1,36 @@
+README.md
+AGENTS.md
+.env.example
+.gitignore
+openspec/
+  project.md
+  specs/
+  changes/
+    archive/
+    <change-name>/
+      proposal.md
+      design.md
+      tasks.md
+      specs/
+docs/
+  dev/
+  external/
+contracts/
+  api/
+  events/
+  payloads/
+  topics/
+  examples/
+src/
+tests/
+  unit/
+  integration/
+  e2e/
+  fixtures/
+scripts/
+infra/
+data/
+  samples/
+  fixtures/
+  seeds/
+tmp/  # gitignored; disposable local working artifacts only

@@ -1,0 +1,38 @@
+# Environment and local secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Local overrides and credentials
+*.local
+credentials.*
+secrets.*
+
+# Logs and temporary output
+*.log
+logs/
+tmp/
+temp/
+.cache/
+
+# Coverage and build output
+coverage/
+dist/
+build/
+out/
+
+# Dependencies and virtual environments
+node_modules/
+.venv/
+venv/
+
+# Editor and operating system files
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
