@@ -7,6 +7,7 @@ Consult this reference when an artifact could plausibly fit in more than one own
 - [`openspec/`](#openspec)
 - [`docs/dev/`](#docsdev)
 - [`docs/external/`](#docsexternal)
+- [`docs/assets/`](#docsassets)
 - [`contracts/`](#contracts)
 - [`src/`](#src)
 - [`tests/`](#tests)
@@ -71,6 +72,24 @@ docs/external/supabase-limits.md
 ```
 
 Do not place the project's official internal interface definitions here.
+
+## `docs/assets/`
+
+Own static resources referenced by project documentation and README:
+
+- README banner images, logos, and project branding
+- Diagrams, flowcharts, and architecture visuals
+- Screenshots and demo GIFs used in developer guides
+
+Examples:
+
+```text
+docs/assets/banner.png
+docs/assets/logo.svg
+docs/assets/architecture-diagram.png
+```
+
+Keep these files small and optimized. Do not store large binary artifacts, video files, or generated build output in `docs/assets/`.
 
 ## `contracts/`
 

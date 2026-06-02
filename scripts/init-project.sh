@@ -35,6 +35,7 @@ mkdir -p openspec/changes/archive
 
 mkdir -p docs/dev
 mkdir -p docs/external
+mkdir -p docs/assets
 
 mkdir -p contracts/api
 mkdir -p contracts/events

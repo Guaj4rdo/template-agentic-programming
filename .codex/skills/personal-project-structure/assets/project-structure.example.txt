@@ -15,6 +15,7 @@ openspec/
 docs/
   dev/
   external/
+  assets/
 contracts/
   api/
   events/

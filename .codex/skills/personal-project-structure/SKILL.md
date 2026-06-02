@@ -26,6 +26,7 @@ Apply a consistent folder ownership model while making or reviewing changes in a
 | Requirement, proposal, change design, implementation tasks, capability spec | `openspec/` |
 | Developer setup, operation, debugging, conventions, onboarding | `docs/dev/` |
 | External vendor, API, SDK, or platform research/reference | `docs/external/` |
+| Documentation assets (images, diagrams, banners, logos) used in README or docs | `docs/assets/` |
 | Official interface, schema, API contract, event, payload, topic, canonical message example | `contracts/` |
 | Executable application or product code | `src/` |
 | Automated tests and test-only fixtures/helpers | `tests/` |

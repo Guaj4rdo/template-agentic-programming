@@ -1,5 +1,7 @@
 # {{PROJECT_NAME}}
 
+![Banner]({{README_BANNER_PATH}})
+
 {{PROJECT_SUMMARY}}
 
 ## Purpose
