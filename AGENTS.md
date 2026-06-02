@@ -1,12 +1,16 @@
 # {{PROJECT_NAME}} - Repository Guidelines
 
-Complete this file after `/init` and before substantive implementation work. Replace every required double-braced field with project-specific guidance, or explicitly state `Not applicable` when a section does not apply. Do not leave unresolved placeholders in an active project.
+Complete this file after `/template-init` and before substantive implementation work. Replace every required double-braced field with project-specific guidance, or explicitly state `Not applicable` when a section does not apply. Do not leave unresolved placeholders in an active project.
 
-For repositories created from this template, run `./scripts/init-project.sh` from the derived repository to create base folders, initialize OpenSpec, and use Codex to complete this document and `README.md`. The initializer must not be run while `origin` points to the template repository.
+For repositories created from this template, run the initialization in two steps:
+1. `bash scripts/init-project.sh` — creates the base folder structure and runs `openspec init`.
+2. In opencode, run `/template-init` — interactively fills this document and `README.md` from `README.template.md`.
+
+The script must not be run while `origin` points to the template repository.
 
 ## Initialization Checklist
 
-After `/init`, define all of the following:
+After `/template-init`, define all of the following:
 
 | Required Information | Value |
 | --- | --- |

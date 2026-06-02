@@ -1,0 +1,14 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": ["AGENTS.md"],
+  "skills": {
+    "paths": [".codex/skills"]
+  },
+  "command": {
+    "template-init": {
+      "description": "Initialize a new project from the agentic-programming template: create folder structure, run openspec init, and interactively fill AGENTS.md and README.md.",
+      "agent": "general",
+      "subtask": true
+    }
+  }
+}
