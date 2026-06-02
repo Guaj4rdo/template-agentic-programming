@@ -1,5 +1,7 @@
 
-<img src="./docs/assets/banner.svg" width="600" alt="Banner" />
+<div align="center">
+  <img src="./docs/assets/banner.svg" width="600" alt="Banner" />
+</div>
 
 A personal project template for AI-guided development using OpenCode, OpenSpec, and a disciplined folder ownership model.
 
