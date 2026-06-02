@@ -1,5 +1,5 @@
 
-![Banner](./docs/assets/banner.svg)
+<img src="./docs/assets/banner.svg" width="600" alt="Banner" />
 
 A personal project template for AI-guided development using OpenCode, OpenSpec, and a disciplined folder ownership model.
 
